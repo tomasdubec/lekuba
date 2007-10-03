@@ -119,7 +119,7 @@ int main(int argc, char **argv){
 	cp = new ConfigParser(configFile);
 
 	if(cp->getUsername() == ""){
-		cerr << "missing username " << configFile << endl;
+		cerr << "missing username in " << configFile << endl;
 		exit(1);
 	}
 	resource = cp->getResource();

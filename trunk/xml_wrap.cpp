@@ -47,7 +47,7 @@ string xmlStanza::xmlStanzaAuth(string username, string password, string resourc
 string xmlStanza::xmlStream(string to){
 	string ret;
 
-	ret = "<?xml version='1.0'?><stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+to+"' version='1.0'>";
+	ret = "<?xml version='1.0' encoding=\"UTF-8\"?><stream:stream xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' to='"+to+"' version='1.0'>";
 
 	return ret;
 }
@@ -70,6 +70,14 @@ string xmlStanza::xmlSASLauth(string method){
 	ret = ret.substr(size+2);*/
 
 	ret = "<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"" + method + "\"/>";
+
+	return ret;
+}
+
+string xmlStanza::xmlSASLauthPLAIN(string cont){
+	string ret;
+
+	ret = "<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\">" + cont + "</auth>";
 
 	return ret;
 }
@@ -494,6 +502,35 @@ bool xmlParserWrap::supportsMD5(void){
 		nod = nod->xmlChildrenNode;
 		while(nod != NULL){
 			if(!xmlStrcmp(nod->name, (const xmlChar *)"mechanism") && !xmlStrcmp((const xmlChar *)"DIGEST-MD5", (tmp = xmlNodeListGetString(doc, nod->xmlChildrenNode, 1)))){
+				xmlFree(tmp);
+				return true;
+			}
+			else
+				nod = nod->next;
+
+			xmlFree(tmp);
+		}
+	}
+	return false;
+}
+
+bool xmlParserWrap::supportsPLAIN(void){
+	xmlNodePtr nod;
+	xmlChar *tmp;
+
+	if(type == FEATURES){
+		nod = getRoot()->xmlChildrenNode;
+		if(!xmlStrcmp(nod->name, (const xmlChar *)"features"))
+			nod = nod->xmlChildrenNode;
+		while(nod != NULL){
+			if(!xmlStrcmp(nod->name, (const xmlChar *)"mechanisms"))
+				break;
+			else
+				nod = nod->next;
+		}
+		nod = nod->xmlChildrenNode;
+		while(nod != NULL){
+			if(!xmlStrcmp(nod->name, (const xmlChar *)"mechanism") && !xmlStrcmp((const xmlChar *)"PLAIN", (tmp = xmlNodeListGetString(doc, nod->xmlChildrenNode, 1)))){
 				xmlFree(tmp);
 				return true;
 			}
