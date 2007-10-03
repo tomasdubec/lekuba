@@ -357,6 +357,47 @@ bool jabberConnection::doSASLMD5(void){
 	return true;
 }
 
+bool jabberConnection::doSASLPLAIN(void){
+	string tmp;
+	xmlParserWrap xmlPar;
+	unsigned char *in, *out;
+	int in_len, out_len;
+
+	tmp = '\0' + username + '\0' + password;
+	/*cout << tmp << endl;
+	in_len = tmp.size() + 1;
+	out_len = in_len * 2;
+	in = (unsigned char *)malloc(tmp.size() * sizeof(unsigned char));
+	strncpy((char *)in, tmp.c_str(), in_len);
+	in[in_len] = 0;
+	out = (unsigned char *)malloc(out_len * sizeof(unsigned char));
+	fprintf(stdout, "iso: %s\n", in);
+	if(isolat1ToUTF8(out, &out_len, in, &in_len) > 0){
+		out[out_len] = 0;
+		fprintf(stdout, "utf8: %s\nin_len: %i, out_len: %i\n", out, in_len, out_len);
+	}
+	else
+		cerr << "error converting to utf8\n";
+	
+	tmp = (char *)out;
+	cout << "tmp: " << tmp << endl;
+	exit(1);*/
+	con << xmlStanza::xmlSASLauthPLAIN(base64encode(tmp));
+	try{
+		con >> tmp;
+	}
+	catch(string e){
+		cerr << e << endl;
+		exit(1);
+	}
+	xmlPar.parse(tmp);
+	if(xmlPar.getType() != SASL_SUCCESS){
+		debugPrint("SASL PLAIN authentication failed. Wrong password?");
+		return false;
+	}
+	return true;
+}
+
 /******************** public ************************/
 
 jabberConnection::jabberConnection(string newjid, string pass, string srvr, int prt, bool tls){
@@ -366,7 +407,7 @@ jabberConnection::jabberConnection(string newjid, string pass, string srvr, int 
 
 	stat = OFFLINE;
 	stav = S_OFF;
-	atpos = newjid.find_first_of('@');
+	atpos = newjid.find_last_of('@');
 	slashpos = newjid.find_first_of('/');
 	username = newjid.substr(0, atpos);
 	useTls = tls;
@@ -381,7 +422,9 @@ jabberConnection::jabberConnection(string newjid, string pass, string srvr, int 
 /*	if(srvr == "no server")
 		host = server;
 	else*/
-		host = srvr;
+	if(srvr == "talk.google.com"){
+		server = newjid.substr(newjid.find_first_of('@') + 1, newjid.find_last_of('@') - newjid.find_first_of('@') - 1);
+	}
 
 	password = pass;
 	con.setHost(srvr);
@@ -579,12 +622,12 @@ bool jabberConnection::login(void){
 			return false;
 		}
 	}
-	/*else if(xmlPar.supportsPLAIN()){
+	else if(xmlPar.supportsPLAIN()){
 		if(!doSASLPLAIN()){
 			debugPrint("SASL authentication failed!");
 			return false;
 		}
-	}*/
+	}
 	//authentication successful, let's start new stream (this is the last time, i promise)
 	con << xmlStanza::xmlStream(server);
 	con >> tmp;

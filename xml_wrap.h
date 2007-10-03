@@ -46,6 +46,7 @@ public:
 	static string itoa(int);
 	static string xmlStream(string to);
 	static string xmlSASLauth(string);
+	static string xmlSASLauthPLAIN(string);
 	static string xmlSASLresponse(string);
 #ifdef MHASH
 	static string xmlStanzaAuth(string username, string password, string resource, string hashid, string id);
@@ -78,6 +79,7 @@ public:
 	bool hasSubTag(string name); //dost mozna nepouzivane
 	bool supportsTLS(void);
 	bool supportsMD5(void);
+	bool supportsPLAIN(void);
 	bool supportsBind(void);
 	string getArg(string name);
 	string getContent(void);
