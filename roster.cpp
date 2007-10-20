@@ -5,6 +5,9 @@ rosterItem_::rosterItem_(){
 	alert = false;
 }
 
+rosterItem_::~rosterItem_(){
+}
+
 string rosterItem_::escapeSpecialChars(string text){
 	int pos = -1;
 	string ret = text;
@@ -86,6 +89,11 @@ Roster::Roster(jabberConnection *jabcon){
 }
 Roster::~Roster(){
 	pthread_mutex_destroy(&mutLock);
+	rosterItemIter ri;
+
+	for(ri = roster.begin(); ri != roster.end(); ri++)
+		ri->backlog.save();
+
 	roster.clear();
 }
 
@@ -265,6 +273,9 @@ void Roster::pushToRoster(void){
 #endif
 			tmp.name = xmlPar.getRosterAtr("name");
 			tmp.jid = xmlPar.getRosterAtr("jid");
+			tmp.backlog.clear();
+			tmp.backlog.addReceived("session opened");
+			tmp.backlog.setJid(tmp.jid);
 			buf = xmlPar.getRosterAtr("subscription");
 			if(buf == "from"){
 				tmp.sub = S_FROM;
@@ -319,6 +330,9 @@ void Roster::loadRoster(void){
 		if(tmp.name == "") //roster is empty
 			break;
 		tmp.jid = xmlPar.getRosterAtr("jid");
+		tmp.backlog.setJid(tmp.jid);
+		tmp.backlog.clear();
+		tmp.backlog.load();
 		tmp.group = xmlPar.getRosterGroup();
 		buf = xmlPar.getRosterAtr("subscription");
 		if(buf == "from")

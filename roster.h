@@ -26,6 +26,7 @@ typedef struct rosterItem_{
 	bool alert;
 	
 	rosterItem_();
+	~rosterItem_();
 	void sendMessage(jabberConnection *, string text);
 	const bool operator<(rosterItem_);
 

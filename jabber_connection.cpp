@@ -628,6 +628,10 @@ bool jabberConnection::login(void){
 			return false;
 		}
 	}
+	else{
+		cerr << "no supported way of autentization detected, sory..\n";
+		exit(1);
+	}
 	//authentication successful, let's start new stream (this is the last time, i promise)
 	con << xmlStanza::xmlStream(server);
 	con >> tmp;

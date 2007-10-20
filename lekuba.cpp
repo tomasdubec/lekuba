@@ -17,7 +17,7 @@ void reg(void){
 	ofstream out;
 	
 	configFile = getenv("HOME");
-	configFile = configFile + "/.lekuba";
+	configFile = configFile + "/.lekuba/config";
 	in.open(configFile.c_str(), ifstream::in);
 	if(in.is_open()){
 		cout << "config file for lekuba already exists (" << configFile << ")\nDo you want me to replace it? [y/n] ";
@@ -105,7 +105,7 @@ int main(int argc, char **argv){
 			reg();
 		}
 		if(!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")){
-			cout << "Lekuba " << VERSION << " by Tomas Dubec\n\nusage: " << argv[0] << " [-r | -h | --help]" << endl << "\t-r\t\tregister new account\n\t-h | --help\tdisplay this help\n\n\tconfiguration file (~/.lekuba) syntax:\n\t\tusername=your_username\n\t\tpassword=\"your password\" [optional]\n\t\tserver=server_name\n\t\tresource=your_resource\n\t\tport=portnumber\n\t\ttls=yes|no" << endl;
+			cout << "Lekuba " << VERSION << " by Tomas Dubec\n\nusage: " << argv[0] << " [-r | -h | --help]" << endl << "\t-r\t\tregister new account\n\t-h | --help\tdisplay this help\n\n\tconfiguration file (~/.lekuba/config) syntax:\n\t\tusername=your_username\n\t\tpassword=\"your password\" [optional]\n\t\tserver=server_name\n\t\tresource=your_resource\n\t\tport=portnumber\n\t\ttls=yes|no" << endl;
 			exit(0);
 		}
 	}
@@ -115,7 +115,7 @@ int main(int argc, char **argv){
 	}
 
 	configFile = getenv("HOME");
-	configFile = configFile + "/.lekuba";
+	configFile = configFile + "/.lekuba/config";
 	cp = new ConfigParser(configFile);
 
 	if(cp->getUsername() == ""){
