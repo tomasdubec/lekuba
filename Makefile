@@ -37,3 +37,12 @@ lekuba.o: lekuba.cpp
 
 clean:
 	rm -f *.o lekuba
+
+
+#
+# comment
+# comment
+#
+
+
+#vdsdfv df dfv df
